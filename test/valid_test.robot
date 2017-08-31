@@ -68,21 +68,24 @@ User Add A New Pet
 
 
 *** Test Cases ***
-US01 Display The Current Date
+US01_01 Display The Current Date
+		[Documentation] As a pet store user I want to see the current date displayed
     Given User Has Access To WebApp
 		When Home Page Is Rendered
 		Then Date Displayed On The Page
 		And Date Format Is	%d-%m-%Y
 
 
-US02 View The List of Pets
+US02_01 View The List of Pets
+		[Documentation] As a pet store user I want to see my current pets Name and Status
     Given User Has Access To WebApp
 		When Home Page Is Rendered
 		Then Pet Lists Displayed In Table
 		And User Can View Pets Name and Status
 
 
-US03 Add A New Pet And Click Create
+US03_01 Add A New Pet And Click Create
+		[Documentation] As a pet store user I want to see add a pet by clicking Create
     Given User Has Access To WebApp
 		When Home Page Is Rendered
 		And Fill In A Random Pet
@@ -90,7 +93,8 @@ US03 Add A New Pet And Click Create
 		And New Pet Displayed In Table
 
 
-US03 Add A New Pet And Enter
+US03_02 Add A New Pet And Enter
+		[Documentation] As a pet store user I want to see add a pet by press Enter
     Given User Has Access To WebApp
 		When Home Page Is Rendered
 		And Fill In A Random Pet
@@ -98,8 +102,10 @@ US03 Add A New Pet And Enter
 		And New Pet Displayed In Table
 
 
-US03 Pet Name And Status Are Mandatory
+US03_03 Pet Name And Status Are Mandatory
+		[Documentation] Check if Pet Name and Status are mandatory fields. This test is ignore because no spec about mandatory fields
+		[Tag] Ignore
     Given User Has Access To WebApp
 		When Home Page Is Rendered
 		And User Add A New Pet	${EMPTY}	${EMPTY}
-		Then Pet Lists Displayed In Table
+		Then Element Should Contain	css=div.pet-form	"Error"
