@@ -40,20 +40,27 @@ User Can View Pets Name and Status
 	Element Should Be Visible    css=span.pet.lbl.pet-name
 	Element Should Be Visible    css=span.pet.lbl.pet-status
 
-Fill In A Random Pet
-	${current_dt}=	Get Current Date	result_format=datetime
-	Set Test Variable    ${NEW_PET_NAME}    Name_${current_dt}
-	Set Test Variable    ${NEW_PET_STATUS}    Status_${current_dt}
-	Fill In A New Pet	${NEW_PET_NAME}	${NEW_PET_STATUS}
-
 New Pet Displayed In Table
 	Table Should Contain    css=table.table.table-hover    ${NEW_PET_NAME}
 	Table Should Contain    css=table.table.table-hover    ${NEW_PET_STATUS}
 
+Generate A New Random Pet
+	${current_dt}=	Get Current Date	result_format=datetime
+	Set Test Variable    ${NEW_PET_NAME}    New_Name_${current_dt}
+	Set Test Variable    ${NEW_PET_STATUS}    New_Status_${current_dt}
+
 Fill In A New Pet
-	[Arguments]    ${name}	${status}
-	Input Text    css=input.form-control.pet-name	${name}
-	Input Text    css=input.form-control.pet-status	${status}
+	[Arguments]    ${name}=random	${status}=random
+	Set Test Variable    ${NEW_PET_NAME}    ${name}
+	Set Test Variable    ${NEW_PET_STATUS}    ${status}
+	Run Keyword If    "${name}"=="random"    Generate A New Random Pet
+	Input Text    css=input.form-control.pet-name	${NEW_PET_NAME}
+	Input Text    css=input.form-control.pet-status	${NEW_PET_STATUS}
+
+Add A New Pet
+	[Arguments]    ${name}=random	${status}=random
+	Fill In A New Pet    ${name}    ${status}
+	Create By Enter
 
 Create By Click
 	Click Element    css=button#btn-create
@@ -61,10 +68,16 @@ Create By Click
 Create By Enter
 	Press Key    css=input.form-control.pet-status    \\13
 
-User Add A New Pet
-	[Arguments]    ${name}	${status}
-	Fill In A New Pet	${name}	${status}
-	Create By Enter
+Update Pet Name And Status
+	${current_dt}=	Get Current Date	result_format=datetime
+	Set Test Variable		${NEW_PET_NAME}    Update_Name_${current_dt}
+	Set Test Variable		${NEW_PET_STATUS}    Update_Status_${current_dt}
+	Click Element	css=span.pet.lbl.pet-name
+	Input Text	css=input.pet.usr-input.pet-name	${NEW_PET_NAME}
+	Press Key		css=input.pet.usr-input.pet-name	\\13
+	Click Element	css=span.pet.lbl.pet-status
+	Input Text	css=input.pet.usr-input.pet-status	${NEW_PET_STATUS}
+	Press Key		css=input.pet.usr-input.pet-status	\\13
 
 
 
@@ -89,7 +102,7 @@ US03_01 Add A New Pet And Click Create
 		[Documentation]	As a pet store user I want to see add a pet by clicking Create
     Given User Has Access To WebApp
 		When Home Page Is Rendered
-		And Fill In A Random Pet
+		And Fill In A New Pet
 		Then Create By Click
 		And New Pet Displayed In Table
 
@@ -98,7 +111,7 @@ US03_02 Add A New Pet And Enter
 		[Documentation]	As a pet store user I want to see add a pet by press Enter
     Given User Has Access To WebApp
 		When Home Page Is Rendered
-		And Fill In A Random Pet
+		And Fill In A New Pet
 		Then Create By Enter
 		And New Pet Displayed In Table
 
@@ -108,5 +121,14 @@ US03_03 Pet Name And Status Are Mandatory
 		[Tags]	Ignore
     Given User Has Access To WebApp
 		When Home Page Is Rendered
-		And User Add A New Pet	${EMPTY}	${EMPTY}
+		And Add A New Pet	${EMPTY}	${EMPTY}
 		Then Element Should Contain	css=div.pet-form	"Error"
+
+
+US04_01
+		[Documentation]	As a pet store user I want to update Pet Name and Status
+    Given User Has Access To WebApp
+		When Home Page Is Rendered
+		And Pet Lists Displayed In Table
+		And Update Pet Name And Status
+		Then New Pet Displayed In Table
