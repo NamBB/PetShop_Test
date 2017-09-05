@@ -4,13 +4,16 @@ Documentation     Test Cases to check User Story of PetStore Web App
 ...
 Library           Selenium2Library
 Library						DateTime
+Library						requests
 Test Teardown			Close Browser
 
 *** Variables ***
 ${SERVER}		localhost:3000
 ${HOME_URL}	http://${SERVER}/
+${REST_URL}	http://${SERVER}/api
 ${BROWSER}		chrome
 ${HOME_TITLE}	Petstore webapp
+
 
 *** Keywords ***
 User Has Access To WebApp
@@ -78,6 +81,7 @@ Update An Existing Pet
 	Press Key		css=input.pet.usr-input.pet-status	\\13
 
 
+
 *** Test Cases ***
 US01_01 Display The Current Date
 		[Documentation]	As a pet store user I want to see the current date displayed
@@ -129,3 +133,22 @@ US04_01 Modify An Existing Pet
 		And Pet Lists Displayed In Table
 		And Update An Existing Pet
 		Then New Pet Displayed In Table
+
+
+US05_01 GET /api/pets
+		${result} =  get	${REST_URL}/pets
+		Should Be Equal  ${result.status_code}  ${200}
+
+US05_02 GET /api/pets/{id}
+		${result} =  get	${REST_URL}/pets/2
+		Should Be Equal  ${result.status_code}  ${200}
+
+US05_03 DELETE /api/pets/{id}
+		${result} =  delete	${REST_URL}/pets/2
+		Should Be Equal  ${result.status_code}  ${200}
+
+US05_04 POST /api/pets
+		${new_pet}=	Catenate    {	"name":"AAA", "status":"BBB"	}
+		${param}=	evaluate	json.loads('''${new_pet}''')    json
+		${result} =  post	${REST_URL}/pets	${param}
+		Should Be Equal  ${result.status_code}  ${201}
