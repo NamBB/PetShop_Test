@@ -1,11 +1,9 @@
 *** Settings ***
-Documentation     Test Cases to check User Story
+Documentation     Test Cases to check User Story of PetStore Web App
 ...
-...               This test has a workflow that is created using keywords in
-...               the imported resource file.
+...
 Library           Selenium2Library
 Library						DateTime
-Library						OperatingSystem
 Test Teardown			Close Browser
 
 *** Variables ***
@@ -26,8 +24,8 @@ Home Page Is Rendered
 Date Displayed On The Page
 	Element Should Be Visible    css=span.banner-date
 
-Date Format Is
-	[Arguments]		${date_format}
+Date Format Is Expected
+	[Arguments]		${date_format}=%d-%m-%Y
 	${current_date}=	Get Current Date	result_format=${date_format}
 	Element Text Should Be    css=span.banner-date    ${current_date}
 
@@ -57,18 +55,18 @@ Fill In A New Pet
 	Input Text    css=input.form-control.pet-name	${NEW_PET_NAME}
 	Input Text    css=input.form-control.pet-status	${NEW_PET_STATUS}
 
-Add A New Pet
-	[Arguments]    ${name}=random	${status}=random
-	Fill In A New Pet    ${name}    ${status}
-	Create By Enter
-
 Create By Click
 	Click Element    css=button#btn-create
 
 Create By Enter
 	Press Key    css=input.form-control.pet-status    \\13
 
-Update Pet Name And Status
+Add A New Pet
+	[Arguments]    ${name}=random	${status}=random
+	Fill In A New Pet    ${name}    ${status}
+	Create By Enter
+
+Update An Existing Pet
 	${current_dt}=	Get Current Date	result_format=datetime
 	Set Test Variable		${NEW_PET_NAME}    Update_Name_${current_dt}
 	Set Test Variable		${NEW_PET_STATUS}    Update_Status_${current_dt}
@@ -80,14 +78,13 @@ Update Pet Name And Status
 	Press Key		css=input.pet.usr-input.pet-status	\\13
 
 
-
 *** Test Cases ***
 US01_01 Display The Current Date
 		[Documentation]	As a pet store user I want to see the current date displayed
     Given User Has Access To WebApp
 		When Home Page Is Rendered
 		Then Date Displayed On The Page
-		And Date Format Is	%d-%m-%Y
+		And Date Format Is Expected
 
 
 US02_01 View The List of Pets
@@ -125,10 +122,10 @@ US03_03 Pet Name And Status Are Mandatory
 		Then Element Should Contain	css=div.pet-form	"Error"
 
 
-US04_01
+US04_01 Modify An Existing Pet
 		[Documentation]	As a pet store user I want to update Pet Name and Status
     Given User Has Access To WebApp
 		When Home Page Is Rendered
 		And Pet Lists Displayed In Table
-		And Update Pet Name And Status
+		And Update An Existing Pet
 		Then New Pet Displayed In Table
